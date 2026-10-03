@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="我的個人收藏網站">
+  <title>我的收藏 | Personal Web</title>
+
+  <!-- Chart.js：用 JavaScript 製作統計圖表 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+      background: #f5f7fb;
+      color: #20242c;
+      line-height: 1.7;
+    }
+
+    /* 導覽列 */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(20, 24, 34, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 14px 6%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      color: white;
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 22px;
+    }
+
+    nav a {
+      color: #ddd;
+      text-decoration: none;
+      transition: 0.25s;
+    }
+
+    nav a:hover {
+      color: white;
+    }
+
+    /* 首頁 */
+    .hero {
+      min-height: 78vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 70px 20px;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(120, 150, 255, 0.25), transparent 35%),
+        radial-gradient(circle at 80% 30%, rgba(255, 190, 100, 0.22), transparent 35%),
+        linear-gradient(135deg, #171b25, #30394d);
+      color: white;
+    }
+
+    .hero-content {
+      max-width: 850px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.3rem, 7vw, 5rem);
+      margin-bottom: 15px;
+      letter-spacing: 2px;
+    }
+
+    .hero p {
+      color: #d8deea;
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      margin-bottom: 30px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 11px 24px;
+      border-radius: 999px;
+      background: white;
+      color: #20242c;
+      text-decoration: none;
+      font-weight: 700;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    }
+
+    /* 共用區塊 */
+    section {
+      width: min(1100px, 90%);
+      margin: 0 auto;
+      padding: 75px 0;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    .section-title h2 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .section-title p {
+      color: #707784;
+    }
+
+    /* 卡片 */
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 10px 35px rgba(30, 40, 60, 0.08);
+    }
+
+    /* 照片 */
+    .photo-card {
+      overflow: hidden;
+      padding: 0;
+    }
+
+    .photo-card img {
+      width: 100%;
+      display: block;
+      max-height: 650px;
+      object-fit: cover;
+    }
+
+    .photo-info {
+      padding: 22px;
+    }
+
+    /* 影片 */
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      border-radius: 18px;
+      background: #111;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+    }
+
+    .video-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* 統計圖表 */
+    .chart-box {
+      max-width: 850px;
+      margin: auto;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 30px;
+    }
+
+    .stat {
+      text-align: center;
+      padding: 20px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 8px 25px rgba(30,40,60,0.07);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 2rem;
+      margin-bottom: 4px;
+    }
+
+    .stat span {
+      color: #747b88;
+    }
+
+    /* 同學網站 */
+    .friends {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .friend-card {
+      background: white;
+      padding: 25px;
+      border-radius: 18px;
+      box-shadow: 0 8px 25px rgba(30,40,60,0.07);
+      transition: transform 0.25s;
+    }
+
+    .friend-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .friend-card h3 {
+      margin-bottom: 8px;
+    }
+
+    .friend-card p {
+      color: #747b88;
+      margin-bottom: 18px;
+      font-size: 0.95rem;
+    }
+
+    .friend-card a {
+      color: #3157d5;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .friend-card a:hover {
+      text-decoration: underline;
+    }
+
+    /* 頁尾 */
+    footer {
+      background: #171b25;
+      color: #bfc5d0;
+      text-align: center;
+      padding: 30px 20px;
+      margin-top: 20px;
+    }
+
+    /* 響應式設計 */
+    @media (max-width: 760px) {
+      nav {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      nav ul {
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .stats,
+      .friends {
+        grid-template-columns: 1fr;
+      }
+
+      section {
+        width: 92%;
+        padding: 55px 0;
+      }
+
+      .hero {
+        min-height: 70vh;
+      }
+    }
+
+    @media (max-width: 430px) {
+      nav ul {
+        font-size: 0.9rem;
+      }
+
+      .card {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- 導覽列 -->
+  <nav>
+    <div class="logo">MY COLLECTION</div>
+    <ul>
+      <li><a href="#home">首頁</a></li>
+      <li><a href="#video">影片</a></li>
+      <li><a href="#photo">照片</a></li>
+      <li><a href="#chart">統計</a></li>
+      <li><a href="#friends">同學網站</a></li>
+    </ul>
+  </nav>
+
+  <!-- 首頁 -->
+  <header class="hero" id="home">
+    <div class="hero-content">
+      <h1>我的收藏世界</h1>
+      <p>影片、照片與一些我喜歡的東西，全部集中在這個小網站裡。</p>
+      <a class="btn" href="#video">開始瀏覽 ↓</a>
+    </div>
+  </header>
+
+  <!-- 喜歡的影片 -->
+  <section id="video">
+    <div class="section-title">
+      <h2>🎬 我最喜歡的影片</h2>
+      <p>アニメ『スティール・ボール・ラン ジョジョの奇妙な冒険』OP</p>
+    </div>
+
+    <div class="video-wrapper">
+      <iframe
+  src="https://www.youtube.com/embed/6UF_qprQiu0?rel=0"
+  title="YouTube video player"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  referrerpolicy="strict-origin-when-cross-origin"
+  allowfullscreen>
+</iframe>
+        title="アニメ『スティール・ボール・ラン ジョジョの奇妙な冒険』ノンクレジットオープニング映像｜Kroi 『SPIN』"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen>
+      </iframe>
+    </div>
+  </section>
+
+  <!-- 喜歡的照片 -->
+  <section id="photo">
+    <div class="section-title">
+      <h2>📷 我喜歡的照片</h2>
+      <p>一張很有特色的照片</p>
+    </div>
+
+    <div class="card photo-card">
+      <img
+        src="https://pbs.twimg.com/media/HIAKt2IbMAAm2j4.jpg"
+        alt="黃色角色照片"
+        loading="lazy">
+      <div class="photo-info">
+        <h3>My Favorite Picture</h3>
+        <p>這張照片的角色表情很有趣，因此把它放進我的個人收藏頁面。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- JavaScript 統計圖表 -->
+  <section id="chart">
+    <div class="section-title">
+      <h2>📊 我的收藏統計</h2>
+      <p>使用 JavaScript + Chart.js 製作互動式統計圖表</p>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <strong>4</strong>
+        <span>收藏分類</span>
+      </div>
+      <div class="stat">
+        <strong>1</strong>
+        <span>推薦影片</span>
+      </div>
+      <div class="stat">
+        <strong>1</strong>
+        <span>推薦照片</span>
+      </div>
+    </div>
+
+    <div class="card chart-box">
+      <canvas id="favoriteChart"></canvas>
+    </div>
+  </section>
+
+  <!-- 三位同學網站 -->
+  <section id="friends">
+    <div class="section-title">
+      <h2>🔗 同學的網站</h2>
+      <p>透過超連結前往班上三位同學的網站</p>
+    </div>
+
+    <div class="friends">
+      <div class="friend-card">
+        <h3>同學網站 01</h3>
+        <p>GitHub Pages 網站</p>
+        <a href="https://giohrtgesb.github.io/net-homework/" target="_blank" rel="noopener noreferrer">
+          前往網站 →
+        </a>
+      </div>
+
+      <div class="friend-card">
+        <h3>同學網站 02</h3>
+        <p>GitHub Pages 網站</p>
+        <a href="https://jinzuha.github.io/web/index.html" target="_blank" rel="noopener noreferrer">
+          前往網站 →
+        </a>
+      </div>
+
+      <div class="friend-card">
+        <h3>同學網站 03</h3>
+        <p>Wix Portfolio 網站</p>
+        <a href="https://bm-architect.wixsite.com/bmportfilio" target="_blank" rel="noopener noreferrer">
+          前往網站 →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2026 My Collection | Web Design Homework</p>
+  </footer>
+
+  <script>
+    // JavaScript 統計圖表
+    const ctx = document.getElementById("favoriteChart");
+
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: ["影片", "照片", "同學網站", "其他收藏"],
+        datasets: [{
+          label: "收藏數量",
+          data: [1, 1, 3, 2],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: true
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1
+            }
+          }
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>
